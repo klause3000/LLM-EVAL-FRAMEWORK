@@ -1,2 +1,0 @@
-2026-05-01 00:59:35 - evalscope - INFO: Running with native backend
-2026-05-01 00:59:35 - evalscope - WARNING: `langdetect` not found. Please run `pip install 'evalscope[ifeval]'` to use IFEval.
