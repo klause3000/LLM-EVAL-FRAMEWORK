@@ -1,0 +1,149 @@
+{
+    "name": "qwen2.5_7b-instruct@pubmedqa",
+    "dataset_name": "pubmedqa",
+    "dataset_pretty_name": "PubMedQA",
+    "dataset_description": "## Overview\n\nPubMedQA is a biomedical question answering dataset designed to evaluate models' ability to reason over biomedical research texts. It contains questions derived from PubMed abstracts with yes/no/maybe answers.\n\n## Task Description\n\n- **Task Type**: Biomedical Question Answering (Yes/No/Maybe)\n- **Input**: PubMed abstract with a research question\n- **Output**: Answer (YES, NO, or MAYBE)\n- **Domain**: Biomedical research, scientific literature\n\n## Key Features\n\n- Questions from real PubMed research abstracts\n- Three-way classification (YES/NO/MAYBE)\n- Tests scientific reasoning and comprehension\n- Expert-annotated with reasoning explanations\n- Useful for biomedical AI evaluation\n\n## Evaluation Notes\n\n- Default configuration uses **0-shot** evaluation\n- Metrics: Accuracy, Precision, Recall, F1-Score, Yes Ratio, Maybe Ratio\n- Aggregation method: F1-score (macro average)\n- Answers should be YES, NO, or MAYBE without explanation",
+    "model_name": "qwen2.5_7b-instruct",
+    "score": 0.5,
+    "metrics": [
+        {
+            "name": "accuracy",
+            "num": 100,
+            "score": 0.5,
+            "macro_score": 0.5,
+            "categories": [
+                {
+                    "name": [
+                        "default"
+                    ],
+                    "num": 100,
+                    "score": 0.5,
+                    "macro_score": 0.5,
+                    "subsets": [
+                        {
+                            "name": "default",
+                            "score": 0.5,
+                            "num": 100
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "precision",
+            "num": 100,
+            "score": 0.5,
+            "macro_score": 0.5,
+            "categories": [
+                {
+                    "name": [
+                        "default"
+                    ],
+                    "num": 100,
+                    "score": 0.5,
+                    "macro_score": 0.5,
+                    "subsets": [
+                        {
+                            "name": "default",
+                            "score": 0.5,
+                            "num": 100
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "recall",
+            "num": 100,
+            "score": 0.4213,
+            "macro_score": 0.4213,
+            "categories": [
+                {
+                    "name": [
+                        "default"
+                    ],
+                    "num": 100,
+                    "score": 0.4213,
+                    "macro_score": 0.4213,
+                    "subsets": [
+                        {
+                            "name": "default",
+                            "score": 0.4213,
+                            "num": 100
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "f1_score",
+            "num": 100,
+            "score": 0.4037,
+            "macro_score": 0.4037,
+            "categories": [
+                {
+                    "name": [
+                        "default"
+                    ],
+                    "num": 100,
+                    "score": 0.4037,
+                    "macro_score": 0.4037,
+                    "subsets": [
+                        {
+                            "name": "default",
+                            "score": 0.4037,
+                            "num": 100
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "yes_ratio",
+            "num": 100,
+            "score": 0.46,
+            "macro_score": 0.46,
+            "categories": [
+                {
+                    "name": [
+                        "default"
+                    ],
+                    "num": 100,
+                    "score": 0.46,
+                    "macro_score": 0.46,
+                    "subsets": [
+                        {
+                            "name": "default",
+                            "score": 0.46,
+                            "num": 100
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "maybe_ratio",
+            "num": 100,
+            "score": 0.46,
+            "macro_score": 0.46,
+            "categories": [
+                {
+                    "name": [
+                        "default"
+                    ],
+                    "num": 100,
+                    "score": 0.46,
+                    "macro_score": 0.46,
+                    "subsets": [
+                        {
+                            "name": "default",
+                            "score": 0.46,
+                            "num": 100
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "analysis": "N/A"
+}

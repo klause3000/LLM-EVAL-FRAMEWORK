@@ -1,0 +1,39 @@
+judge:
+  # provider 可选: anthropic | openai | ollama
+  # provider: anthropic
+  # model: claude-sonnet-4-6
+  # api_key_env: ANTHROPIC_API_KEY   # 环境变量名（不是值）
+  # max_retries: 3
+  # timeout: 60                       # 单次请求超时（秒）
+
+  # 若 provider=openai（官方端点）
+  provider: openai
+  model: ernie-4.5-turbo-128k
+  api_key: your_api_key
+  # base_url 可选，留空则使用官方端点；填写后可对接兼容 OpenAI 协议的第三方服务
+  # base_url: https://api.siliconflow.cn/v1   # 示例：硅基流动
+  # base_url: https://api.moonshot.cn/v1      # 示例：月之暗面
+  base_url: https://qianfan.baidubce.com/v2      # 文心一言
+
+  # 若 provider=ollama（本地强模型）
+  # provider: ollama
+  # model: qwen2.5:72b
+  # base_url: http://localhost:11434/v1
+
+# 评分维度定义（名称 + 说明，驱动 judge prompt 生成）
+scoring_dimensions:
+  - name: 事实正确性
+    description: "1.有没有瞎编、幻觉、错误数据、错误常识。2.是否和参考标准答案 / 真实事实一致。3.无捏造人物、时间、数字、专业结论。"
+  - name: 指令遵循能力
+    description: "1.是否严格听懂用户要求2.有没有答非所问、跑偏主题3.是否满足格式要求、长度要求、限定条件（如不能超字数、分点、简答）"
+  - name: 完整性
+    description: "1.该覆盖的知识点、要点有没有漏2.不缺关键信息、不敷衍半句就结束"
+  - name: 精准性 & 简洁性
+    description: "1.有没有多余废话、重复内容、无关灌水2.不啰嗦、不强行凑字数"
+  - name: 逻辑连贯性
+    description: "1.前后有没有自相矛盾2.推理链条通顺、因果合理、语序不混乱3.段落衔接自然，不跳脱、不断层"
+  - name: 流畅度
+    description: "1.语句通顺、语法正确、无病句2.符合人类口语 / 书面表达习惯3.无生硬机器翻译感、无乱组词"
+
+# badcase 阈值：任意维度分数低于此值则标记为 badcase
+badcase_threshold: 6

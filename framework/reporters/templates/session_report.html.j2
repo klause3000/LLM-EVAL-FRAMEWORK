@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LLM 评测报告 · {{ data.session_ts }}</title>
+{{ plotly_js }}
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;background:#f0f2f5;color:#222;font-size:14px}
+.container{max-width:1200px;margin:0 auto;padding:24px 16px}
+h1{font-size:22px;font-weight:700;color:#1a1a2e}
+h2{font-size:17px;font-weight:600;color:#1a1a2e;margin-bottom:12px}
+h3{font-size:14px;font-weight:600;color:#444;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.header{background:#1a1a2e;color:#fff;padding:20px 28px;border-radius:12px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between}
+.header h1{color:#fff;font-size:20px}
+.header .meta{font-size:13px;color:#a0aec0;margin-top:4px}
+.badge{display:inline-block;background:#4f8ef7;color:#fff;border-radius:20px;padding:2px 12px;font-size:12px;font-weight:600;margin-left:8px}
+.model-card{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.07);margin-bottom:28px;overflow:hidden}
+.model-header{background:#1a1a2e;color:#fff;padding:14px 24px;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.model-body{padding:20px 24px}
+.section{margin-bottom:24px}
+.section-title{font-size:13px;font-weight:700;color:#4f8ef7;text-transform:uppercase;letter-spacing:.8px;padding-bottom:6px;border-bottom:2px solid #e8ecf4;margin-bottom:14px}
+.kpi-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.kpi{background:#f7f9fc;border:1px solid #e8ecf4;border-radius:8px;padding:10px 16px;min-width:120px;flex:1}
+.kpi .label{font-size:11px;color:#666;margin-bottom:4px}
+.kpi .value{font-size:18px;font-weight:700;color:#1a1a2e}
+.kpi .value.good{color:#43c98a}
+.kpi .value.warn{color:#ffc107}
+.kpi .value.bad{color:#f76c6c}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:#f7f9fc;padding:8px 12px;text-align:left;color:#555;font-weight:600;border-bottom:2px solid #e8ecf4}
+td{padding:7px 12px;border-bottom:1px solid #f0f2f5}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafbfc}
+.score-bar{display:inline-block;height:8px;background:#4f8ef7;border-radius:4px;min-width:2px;vertical-align:middle;margin-right:6px}
+.tag{display:inline-block;background:#e8ecf4;color:#555;border-radius:4px;padding:1px 7px;font-size:11px;margin:1px}
+.badcase-section details{border:1px solid #ffe4e4;border-radius:8px;margin-bottom:8px;overflow:hidden}
+.badcase-section summary{background:#fff8f8;padding:10px 14px;cursor:pointer;font-weight:600;color:#c0392b;list-style:none;display:flex;align-items:center;gap:8px}
+.badcase-section summary::-webkit-details-marker{display:none}
+.badcase-content{padding:14px;background:#fff;font-size:13px}
+.badcase-content .field{margin-bottom:8px}
+.badcase-content .field-label{font-weight:600;color:#666;font-size:11px;text-transform:uppercase;margin-bottom:2px}
+.badcase-content .field-value{background:#f7f9fc;padding:8px;border-radius:4px;white-space:pre-wrap;word-break:break-word}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.chart-wrap{background:#fafbfc;border-radius:8px;padding:8px}
+.no-data{color:#999;font-style:italic;padding:12px 0;text-align:center}
+.toc{background:#fff;border-radius:12px;padding:16px 20px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.toc h3{margin-bottom:8px}
+.toc a{color:#4f8ef7;text-decoration:none;margin-right:16px;font-size:13px}
+.toc a:hover{text-decoration:underline}
+@media(max-width:700px){.two-col{grid-template-columns:1fr}.kpi{min-width:80px}}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- 页头 -->
+  <div class="header">
+    <div>
+      <h1>LLM 评测报告</h1>
+      <div class="meta">会话时间：{{ data.session_ts }} &nbsp;|&nbsp; 共 {{ data.total_runs }} 个评测任务 &nbsp;|&nbsp; {{ data.models | length }} 个模型</div>
+    </div>
+  </div>
+
+  <!-- 快速跳转 -->
+  {% if data.models | length > 1 %}
+  <div class="toc">
+    <h3>模型跳转</h3>
+    {% for md in data.models %}
+    <a href="#model-{{ loop.index }}">{{ md.model_name }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- 每个模型 -->
+  {% for md in data.models %}
+  {% set charts = model_charts[loop.index0] %}
+  <div class="model-card" id="model-{{ loop.index }}">
+
+    <div class="model-header">
+      <span>{{ md.model_name }}</span>
+      {% if md.obj_datasets %}<span class="badge">客观</span>{% endif %}
+      {% if md.subj_datasets %}<span class="badge">主观</span>{% endif %}
+      {% if md.gen_datasets %}<span class="badge">生成质量</span>{% endif %}
+      {% if md.safety_datasets %}<span class="badge" style="background:#e74c3c">安全</span>{% endif %}
+    </div>
+
+    <div class="model-body">
+
+      <!-- ── 客观评测 ── -->
+      {% if md.obj_datasets %}
+      <div class="section">
+        <div class="section-title">客观评测</div>
+        <div class="two-col">
+          <div>
+            <table>
+              <thead><tr><th>数据集</th><th>准确率</th><th>样本数</th><th>状态</th></tr></thead>
+              <tbody>
+              {% for ds in md.obj_datasets %}
+              <tr>
+                <td>{{ ds.name }}</td>
+                <td>
+                  {% if ds.score is not none %}
+                  <span class="score-bar" style="width:{{ (ds.score * 80)|int }}px"></span>
+                  {{ "%.1f" | format(ds.score * 100) }}%
+                  {% else %}N/A{% endif %}
+                </td>
+                <td>{{ ds.num_samples }}</td>
+                <td>{% if ds.error %}<span style="color:#f76c6c">失败</span>{% else %}<span style="color:#43c98a">OK</span>{% endif %}</td>
+              </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div class="chart-wrap">{{ charts.obj_chart }}</div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- ── 主观评测 ── -->
+      {% if md.subj_datasets %}
+      <div class="section">
+        <div class="section-title">主观评测</div>
+
+        <!-- 各数据集汇总 -->
+        <table style="margin-bottom:16px">
+          <thead><tr><th>数据集</th><th>case 数</th><th>平均分</th><th>badcase 数</th><th>badcase 率</th></tr></thead>
+          <tbody>
+          {% for ds in md.subj_datasets %}
+          <tr>
+            <td>{{ ds.dataset_name }}</td>
+            <td>{{ ds.total_cases }}</td>
+            <td>
+              {% if ds.avg_score is not none %}
+              {% set cls = "good" if ds.avg_score >= 8 else ("warn" if ds.avg_score >= 6 else "bad") %}
+              <span class="{{ cls }}" style="font-weight:700">{{ "%.2f" | format(ds.avg_score) }}</span>
+              {% else %}N/A{% endif %}
+            </td>
+            <td>{{ ds.badcase_count }}</td>
+            <td>
+              {% if ds.badcase_rate == 0 %}<span style="color:#43c98a">0%</span>
+              {% else %}<span style="color:#f76c6c">{{ "%.0f" | format(ds.badcase_rate * 100) }}%</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+          {% if md.combined_subj and md.subj_datasets | length > 1 %}
+          <tr style="background:#f0f4ff;font-weight:700">
+            <td>合计</td>
+            <td>{{ md.combined_subj.total_cases }}</td>
+            <td>
+              {% if md.combined_subj.avg_score is not none %}
+              {% set cls = "good" if md.combined_subj.avg_score >= 8 else ("warn" if md.combined_subj.avg_score >= 6 else "bad") %}
+              <span class="{{ cls }}">{{ "%.2f" | format(md.combined_subj.avg_score) }}</span>
+              {% else %}N/A{% endif %}
+            </td>
+            <td>{{ md.combined_subj.badcase_count }}</td>
+            <td>
+              {% set rate = md.combined_subj.badcase_rate %}
+              {% if rate == 0 %}<span style="color:#43c98a">0%</span>
+              {% else %}<span style="color:#f76c6c">{{ "%.0f" | format(rate * 100) }}%</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endif %}
+          </tbody>
+        </table>
+
+        <!-- 雷达图 + 分布直方图 -->
+        <div class="two-col">
+          <div class="chart-wrap">{{ charts.radar }}</div>
+          <div class="chart-wrap">{{ charts.hist }}</div>
+        </div>
+
+        <!-- Badcase 列表 -->
+        {% if md.badcases %}
+        <div class="badcase-section" style="margin-top:16px">
+          <h3>Badcase 详情（共 {{ md.badcases | length }} 条）</h3>
+          {% for bc in md.badcases %}
+          <details>
+            <summary>
+              <span>{{ bc.case_id }}</span>
+              <span class="tag">{{ bc.dataset_name }}</span>
+              {% for t in bc.tags %}<span class="tag">{{ t }}</span>{% endfor %}
+              <span style="margin-left:auto;color:#e74c3c;font-size:12px">{{ "%.2f" | format(bc.overall_score) }} 分</span>
+            </summary>
+            <div class="badcase-content">
+              <div class="field"><div class="field-label">问题</div><div class="field-value">{{ bc.question }}</div></div>
+              <div class="field"><div class="field-label">模型回答</div><div class="field-value">{{ bc.model_answer[:500] }}{% if bc.model_answer | length > 500 %}…{% endif %}</div></div>
+              {% if bc.reference_answer %}<div class="field"><div class="field-label">参考答案</div><div class="field-value">{{ bc.reference_answer[:300] }}</div></div>{% endif %}
+              <div class="field"><div class="field-label">Judge 说明</div><div class="field-value">{{ bc.judge_reasoning[:400] }}{% if bc.judge_reasoning | length > 400 %}…{% endif %}</div></div>
+              {% if bc.dimension_scores %}
+              <div class="field"><div class="field-label">维度分数</div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
+                {% for dim, score in bc.dimension_scores.items() %}
+                <span style="background:#f0f4ff;padding:3px 10px;border-radius:4px;font-size:12px">{{ dim }}: {{ score }}</span>
+                {% endfor %}
+                </div>
+              </div>
+              {% endif %}
+            </div>
+          </details>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+      </div>
+      {% endif %}
+
+      <!-- ── 生成质量 ── -->
+      {% if md.gen_datasets %}
+      <div class="section">
+        <div class="section-title">生成质量（BLEU / ROUGE / 召回率）</div>
+        <table>
+          <thead>
+            <tr>
+              <th>数据集</th><th>case 数</th>
+              <th>BLEU</th><th>ROUGE-1</th><th>ROUGE-2</th><th>ROUGE-L</th><th>召回率</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for ds in md.gen_datasets %}
+          <tr>
+            <td>{{ ds.dataset_name }}</td>
+            <td>{{ ds.total_cases }}</td>
+            <td>{{ "%.2f" | format(ds.avg_bleu) if ds.avg_bleu is not none else "N/A" }}</td>
+            <td>{{ "%.4f" | format(ds.avg_rouge1) if ds.avg_rouge1 is not none else "N/A" }}</td>
+            <td>{{ "%.4f" | format(ds.avg_rouge2) if ds.avg_rouge2 is not none else "N/A" }}</td>
+            <td>
+              {% if ds.avg_rougeL is not none %}
+              {% set cls = "good" if ds.avg_rougeL >= 0.4 else ("warn" if ds.avg_rougeL >= 0.2 else "bad") %}
+              <span class="{{ cls }}" style="font-weight:700">{{ "%.4f" | format(ds.avg_rougeL) }}</span>
+              {% else %}N/A{% endif %}
+            </td>
+            <td>
+              {% if ds.avg_recall is not none %}
+              {% set cls = "good" if ds.avg_recall >= 0.6 else ("warn" if ds.avg_recall >= 0.3 else "bad") %}
+              <span class="{{ cls }}" style="font-weight:700">{{ "%.4f" | format(ds.avg_recall) }}</span>
+              {% else %}N/A{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
+      <!-- ── 安全性评测 ── -->
+      {% if md.safety_datasets %}
+      <div class="section">
+        <div class="section-title">安全性评测（CValues）</div>
+
+        <!-- 各数据集汇总 -->
+        <table style="margin-bottom:16px">
+          <thead><tr><th>数据集</th><th>总 case</th><th>安全 case</th><th>不安全 case</th><th>安全率</th></tr></thead>
+          <tbody>
+          {% for ds in md.safety_datasets %}
+          <tr>
+            <td>{{ ds.dataset_name }}</td>
+            <td>{{ ds.total_cases }}</td>
+            <td><span style="color:#43c98a;font-weight:700">{{ ds.safe_count }}</span></td>
+            <td>
+              {% if ds.unsafe_count > 0 %}
+              <span style="color:#f76c6c;font-weight:700">{{ ds.unsafe_count }}</span>
+              {% else %}<span style="color:#43c98a">0</span>{% endif %}
+            </td>
+            <td>
+              {% if ds.safety_rate is not none %}
+              {% set cls = "good" if ds.safety_rate >= 0.9 else ("warn" if ds.safety_rate >= 0.7 else "bad") %}
+              <span class="{{ cls }}" style="font-weight:700">{{ "%.1f" | format(ds.safety_rate * 100) }}%</span>
+              {% else %}N/A{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+
+        <!-- 分类安全率明细 -->
+        {% for ds in md.safety_datasets %}
+        {% if ds.by_category %}
+        <h3 style="font-size:12px;color:#666;margin-bottom:8px">{{ ds.dataset_name }} — 分类安全率</h3>
+        <table style="margin-bottom:16px;width:auto;min-width:400px">
+          <thead><tr><th>分类</th><th>安全率</th><th>可视化</th></tr></thead>
+          <tbody>
+          {% for cat, rate in ds.by_category.items() %}
+          <tr>
+            <td>{{ cat }}</td>
+            <td>
+              {% if rate is not none %}
+              {% set cls = "good" if rate >= 0.9 else ("warn" if rate >= 0.7 else "bad") %}
+              <span class="{{ cls }}">{{ "%.1f" | format(rate * 100) }}%</span>
+              {% else %}N/A{% endif %}
+            </td>
+            <td>
+              {% if rate is not none %}
+              <div style="background:#e8ecf4;border-radius:4px;width:120px;height:8px;display:inline-block;vertical-align:middle">
+                <div style="background:{% if rate >= 0.9 %}#43c98a{% elif rate >= 0.7 %}#ffc107{% else %}#f76c6c{% endif %};width:{{ (rate * 120)|int }}px;height:8px;border-radius:4px"></div>
+              </div>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+        {% endfor %}
+
+        <!-- 不安全 case 详情 -->
+        {% if md.unsafe_cases %}
+        <div class="badcase-section">
+          <h3>不安全 Case 详情（共 {{ md.unsafe_cases | length }} 条）</h3>
+          {% for uc in md.unsafe_cases %}
+          <details>
+            <summary>
+              <span>{{ uc.case_id }}</span>
+              <span class="tag" style="background:#ffe4e4;color:#c0392b">{{ uc.category }}</span>
+              {% for t in uc.tags %}<span class="tag">{{ t }}</span>{% endfor %}
+              <span style="margin-left:auto;color:#e74c3c;font-size:12px">UNSAFE</span>
+            </summary>
+            <div class="badcase-content">
+              <div class="field"><div class="field-label">问题</div><div class="field-value">{{ uc.question }}</div></div>
+              <div class="field"><div class="field-label">模型回答</div><div class="field-value">{{ uc.model_answer[:500] }}{% if uc.model_answer | length > 500 %}…{% endif %}</div></div>
+              <div class="field"><div class="field-label">Judge 判断理由</div><div class="field-value">{{ uc.judge_reasoning }}</div></div>
+            </div>
+          </details>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p style="color:#43c98a;font-weight:600;padding:8px 0">全部 case 安全通过</p>
+        {% endif %}
+
+      </div>
+      {% endif %}
+
+    </div><!-- /model-body -->
+  </div><!-- /model-card -->
+  {% endfor %}
+
+  <div style="text-align:center;color:#999;font-size:12px;padding:16px 0">
+    由 LLM 评测框架自动生成 · {{ data.session_ts }}
+  </div>
+
+</div>
+</body>
+</html>

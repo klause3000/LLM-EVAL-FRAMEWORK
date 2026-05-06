@@ -1,0 +1,138 @@
+2026-04-30 23:14:30 - evalscope - INFO: Running with native backend
+2026-04-30 23:14:30 - evalscope - INFO: Dump task config to ./outputs\20260430_231430\configs\task_config.yaml
+2026-04-30 23:14:30 - evalscope - INFO: {
+    "model": "qwen2.5:7b-instruct",
+    "model_id": "qwen2.5_7b-instruct",
+    "model_args": {},
+    "model_task": "text_generation",
+    "chat_template": null,
+    "datasets": [
+        "chinese_simpleqa"
+    ],
+    "dataset_args": {
+        "chinese_simpleqa": {
+            "name": "chinese_simpleqa",
+            "dataset_id": "AI-ModelScope/Chinese-SimpleQA",
+            "output_types": [
+                "generation"
+            ],
+            "subset_list": [
+                "中华文化",
+                "人文与社会科学",
+                "工程、技术与应用科学",
+                "生活、艺术与文化",
+                "社会",
+                "自然与自然科学"
+            ],
+            "default_subset": "default",
+            "few_shot_num": 0,
+            "few_shot_random": false,
+            "train_split": null,
+            "eval_split": "train",
+            "prompt_template": "请回答问题：\n\n{question}",
+            "few_shot_prompt_template": null,
+            "system_prompt": null,
+            "query_template": null,
+            "pretty_name": "Chinese-SimpleQA",
+            "description": "\n## Overview\n\nChinese SimpleQA is a Chinese question-answering dataset designed to evaluate the performance of language models on simple factual questions. It tests the model's ability to understand and generate correct answers in Chinese across various knowledge domains.\n\n## Task Description\n\n- **Task Type**: Chinese Factual Question Answering\n- **Input**: Simple factual question in Chinese\n- **Output**: Factual answer in Chinese\n- **Language**: Chinese\n\n## Key Features\n\n- Diverse topics covering various knowledge domains\n- Simple factual questions testing world knowledge\n- Chinese language evaluation\n- LLM-as-judge evaluation for answer correctness\n- Multiple category subsets available\n\n## Evaluation Notes\n\n- Default configuration uses **0-shot** evaluation\n- Uses LLM-as-judge for evaluation\n- Metrics: is_correct, is_incorrect, is_not_attempted\n- Evaluates factual accuracy without requiring exact match\n",
+            "paper_url": null,
+            "data_statistics": null,
+            "sample_example": null,
+            "tags": [
+                "Knowledge",
+                "QA",
+                "Chinese"
+            ],
+            "filters": null,
+            "metric_list": [
+                "is_correct",
+                "is_incorrect",
+                "is_not_attempted"
+            ],
+            "aggregation": "mean",
+            "shuffle": false,
+            "shuffle_choices": false,
+            "force_redownload": false,
+            "review_timeout": null,
+            "extra_params": {},
+            "sandbox_config": {}
+        }
+    },
+    "dataset_dir": "C:\\Users\\Administrator\\.cache\\modelscope\\hub\\datasets",
+    "dataset_hub": "modelscope",
+    "repeats": 1,
+    "generation_config": {
+        "batch_size": 1,
+        "temperature": 0.0
+    },
+    "eval_type": "openai_api",
+    "eval_backend": "Native",
+    "eval_config": null,
+    "limit": 20,
+    "eval_batch_size": 1,
+    "use_cache": false,
+    "rerun_review": false,
+    "work_dir": "./outputs\\20260430_231430",
+    "no_timestamp": false,
+    "enable_progress_tracker": false,
+    "ignore_errors": false,
+    "debug": false,
+    "seed": 42,
+    "api_url": "http://localhost:11434/v1",
+    "timeout": null,
+    "stream": null,
+    "judge_strategy": "auto",
+    "judge_worker_num": null,
+    "judge_model_args": {},
+    "analysis_report": false,
+    "use_sandbox": false,
+    "sandbox_type": "docker",
+    "sandbox_manager_config": {},
+    "evalscope_version": "1.6.0"
+}
+2026-04-30 23:14:30 - evalscope - INFO: Start loading benchmark dataset: chinese_simpleqa
+2026-04-30 23:14:32 - evalscope - INFO: Loading dataset AI-ModelScope/Chinese-SimpleQA from modelscope > subset: default > split: train ...
+2026-04-30 23:16:16 - evalscope - INFO: Start evaluating 6 subsets of chinese_simpleqa: ['中华文化', '人文与社会科学', '工程、技术与应用科学', '生活、艺术与文化', '社会', '自然与自然科学']
+2026-04-30 23:16:16 - evalscope - INFO: Unified pool: 120 items to process, 0 already fully cached (120 total across all subsets).
+2026-04-30 23:16:16 - evalscope - INFO: Loading model for prediction...
+2026-04-30 23:16:16 - evalscope - INFO: Creating model qwen2.5:7b-instruct with eval_type=openai_api base_url=http://localhost:11434/v1, config={'retries': 5, 'retry_interval': 10, 'batch_size': 1, 'temperature': 0.0}, model_args={}
+2026-04-30 23:16:16 - evalscope - INFO: Model loaded successfully.
+2026-04-30 23:16:21 - evalscope - ERROR: Processing item in subset='中华文化' failed: LLM judge model arguments must be provided for LLM-based judge strategies. Please check your task configuration.
+Traceback:
+Traceback (most recent call last):
+  File "c:\Users\Administrator\llm-eval-framework\.venv\Lib\site-packages\evalscope\utils\function_utils.py", line 278, in run_in_threads_with_progress
+    result = fut.result()
+             ^^^^^^^^^^^^
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\Administrator\llm-eval-framework\.venv\Lib\site-packages\evalscope\evaluator\evaluator.py", line 288, in worker
+    return self._process_work_item(item, context.model_prediction_dir)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\Administrator\llm-eval-framework\.venv\Lib\site-packages\evalscope\evaluator\evaluator.py", line 334, in _process_work_item
+    sample_score = (None if self.benchmark.use_batch_scoring else self._review_task_state(task_state))
+                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\Administrator\llm-eval-framework\.venv\Lib\site-packages\evalscope\evaluator\evaluator.py", line 444, in _review_task_state
+    sample_score = self.benchmark.calculate_metrics(task_state=task_state)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\Administrator\llm-eval-framework\.venv\Lib\site-packages\evalscope\api\benchmark\adapters\default_data_adapter.py", line 607, in calculate_metrics
+    final_score = self.llm_match_score(
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\Administrator\llm-eval-framework\.venv\Lib\site-packages\evalscope\benchmarks\chinese_simple_qa\csimple_qa_adapter.py", line 177, in llm_match_score
+    judge_response = self.llm_judge.judge(prompt, system_prompt=system_prompt)
+                     ^^^^^^^^^^^^^^
+  File "c:\Users\Administrator\llm-eval-framework\.venv\Lib\site-packages\evalscope\api\mixin\llm_judge_mixin.py", line 37, in llm_judge
+    self._llm_judge = self.init_llm_judge()
+                      ^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\Administrator\llm-eval-framework\.venv\Lib\site-packages\evalscope\api\mixin\llm_judge_mixin.py", line 77, in init_llm_judge
+    raise ValueError(
+ValueError: LLM judge model arguments must be provided for LLM-based judge strategies. Please check your task configuration.
+
+2026-04-30 23:16:21 - evalscope - INFO: Evaluating[chinese_simpleqa]   1%| 1/120 [Elapsed: 00:04 < Remaining: 09:29,  4.79s/it]
+2026-04-30 23:16:21 - evalscope - INFO: Running[eval]   0%| 0/1 [Elapsed: 01:51 < Remaining: ?, ?benchmark/s]
+2026-04-30 23:16:21 - evalscope - INFO: Args: Task config is provided with TaskConfig type.

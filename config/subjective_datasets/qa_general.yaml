@@ -1,0 +1,103 @@
+dataset_name: qa_general
+description: "通用能力主观测试集（示例）"
+
+cases:
+  - id: "gen_001"
+    question: "请用简洁的语言解释什么是大语言模型（LLM），并举一个实际应用场景。"
+    reference_answer: "大语言模型是基于海量文本数据训练的深度神经网络，能理解和生成自然语言。实际应用如智能客服、代码补全等。"
+    tags: ["概念理解", "中文"]
+
+  - id: "gen_002"
+    question: "如何用 Python 实现一个快速排序算法？请给出代码并解释时间复杂度。"
+    reference_answer: "快速排序选取一个基准元素，将数组分成小于和大于基准的两部分，递归排序。平均时间复杂度 O(n log n)，最坏 O(n²)。"
+    tags: ["coding", "algorithm"]
+
+  - id: "gen_003"
+    question: "请分析：'如果所有鸟都会飞，企鹅是鸟，那么企鹅会飞'这个推理的问题所在。"
+    reference_answer: "大前提'所有鸟都会飞'是错误的，企鹅是不会飞的鸟，因此推理的前提不成立。"
+    tags: ["逻辑推理"]
+
+  - id: "gen_004"
+    question: "请用emoji来解释量子纠缠现象。"
+    reference_answer: ""
+    tags: ["创意表达", "物理"]
+
+  - id: "gen_005"
+    question: "帮我写一封拒绝朋友借钱请求的礼貌短信，既要委婉又不失真诚。"
+    reference_answer: ""
+    tags: ["话术", "社交场景"]
+
+  - id: "gen_006"
+    question: "TCP 和 UDP 的核心区别是什么？分别适合哪些场景？"
+    reference_answer: "TCP 是面向连接、可靠传输、有序到达，适合文件传输、HTTP 等需要可靠性的场景；UDP 是无连接、低延迟，适合视频直播、游戏、DNS 等对实时性要求高的场景。"
+    tags: ["计算机网络", "概念理解"]
+
+  - id: "gen_007"
+    question: "解释 Python 中 GIL（全局解释器锁）的作用及其对多线程性能的影响。"
+    reference_answer: "GIL 是 CPython 的互斥锁，同一时刻只允许一个线程执行 Python 字节码。对 CPU 密集型任务多线程无法充分利用多核，应改用多进程；对 I/O 密集型任务影响较小。"
+    tags: ["Python", "并发"]
+
+  - id: "gen_008"
+    question: "什么是数据库事务的 ACID 特性？请分别解释每个字母的含义。"
+    reference_answer: "ACID：原子性（Atomicity，事务要么全部成功要么全部回滚）、一致性（Consistency，事务前后数据保持一致状态）、隔离性（Isolation，并发事务互不干扰）、持久性（Durability，提交后数据永久保存）。"
+    tags: ["数据库", "概念理解"]
+
+  - id: "gen_009"
+    question: "请用通俗语言解释梯度下降算法，不需要写公式。"
+    reference_answer: "梯度下降就像在山上蒙着眼睛找最低点，每次感受脚下的坡度，沿着最陡的下坡方向迈一小步，不断重复直到到达山谷（损失最小值）。"
+    tags: ["机器学习", "概念理解"]
+
+  - id: "gen_010"
+    question: "REST API 和 GraphQL 的主要区别是什么？各自的优缺点是什么？"
+    reference_answer: "REST 按资源设计多个端点，简单直观，缓存友好，但可能过度获取或不足获取数据；GraphQL 单一端点，客户端精确指定所需字段，灵活性高，但查询复杂，缓存较难实现。"
+    tags: ["API设计", "后端"]
+
+  - id: "gen_011"
+    question: "请写一首以'秋天的落叶'为主题的五言绝句。"
+    reference_answer: ""
+    tags: ["创作", "中文诗歌"]
+
+  - id: "gen_012"
+    question: "如果你是一家初创公司的 CTO，面对技术债务积累严重的情况，你会如何决策和处理？"
+    reference_answer: ""
+    tags: ["管理决策", "工程实践"]
+
+  - id: "gen_013"
+    question: "解释什么是 CAP 定理，并举例说明如何在分布式系统中做出权衡。"
+    reference_answer: "CAP 定理指分布式系统无法同时保证一致性（Consistency）、可用性（Availability）和分区容错性（Partition tolerance）三者，最多只能满足其二。例如 ZooKeeper 优先保证 CP（牺牲部分可用性），Cassandra 优先保证 AP（牺牲强一致性）。"
+    tags: ["分布式系统", "概念理解"]
+
+  - id: "gen_014"
+    question: "用一段话解释'奥卡姆剃刀'原则，并给出一个日常生活中的应用例子。"
+    reference_answer: "奥卡姆剃刀原则是：如无必要，勿增实体——在多种解释中优先选择假设最少、最简单的那个。例如汽车无法启动时，先检查油量不足或电池亏电，而不是直接假设发动机损坏。"
+    tags: ["哲学思维", "日常应用"]
+
+  - id: "gen_015"
+    question: "请比较 Docker 容器与虚拟机（VM）的区别，列出各自的适用场景。"
+    reference_answer: "Docker 容器共享宿主机内核，启动快、资源占用少，适合微服务、CI/CD 和快速部署；VM 有独立操作系统，隔离性更强，适合需要运行不同操作系统或强安全隔离的场景。"
+    tags: ["DevOps", "容器化"]
+
+  - id: "gen_016"
+    question: "解释 JavaScript 中 Promise 和 async/await 的关系，以及它们如何解决回调地狱问题。"
+    reference_answer: "Promise 是异步操作的封装对象，通过链式 .then() 替代嵌套回调；async/await 是 Promise 的语法糖，让异步代码看起来像同步代码，大幅提升可读性，两者本质上都是对事件循环的调度封装。"
+    tags: ["JavaScript", "异步编程"]
+
+  - id: "gen_017"
+    question: "什么是向量数据库？它与传统关系型数据库有什么本质区别？"
+    reference_answer: "向量数据库专门存储和检索高维向量（如文本嵌入、图像特征），通过近似最近邻（ANN）算法进行语义相似度搜索；关系型数据库存储结构化数据，通过精确匹配（SQL）查询，两者在存储结构、查询方式和应用场景上完全不同。"
+    tags: ["数据库", "AI基础设施"]
+
+  - id: "gen_018"
+    question: "请说明在代码 review 中应该重点关注哪些方面，列出你认为最重要的五点。"
+    reference_answer: "代码 review 重点：1）正确性（逻辑是否符合需求、边界条件处理）；2）安全性（输入校验、SQL 注入、权限控制）；3）可读性（命名、注释、函数长度）；4）性能（N+1 查询、不必要的循环、内存泄漏）；5）可测试性（函数是否单一职责、是否便于单元测试）。"
+    tags: ["工程实践", "代码质量"]
+
+  - id: "gen_019"
+    question: "解释 Transformer 架构中 Attention 机制的核心思想，用尽量通俗的语言。"
+    reference_answer: "Attention 机制让模型在处理每个词时，能动态关注句子中其他所有词的相关程度——就像翻译一句话时，翻译某个词时大脑会重点参考原文中与之最相关的几个词，而非平等对待所有词。"
+    tags: ["深度学习", "NLP"]
+
+  - id: "gen_020"
+    question: "请描述一次你认为理想的技术方案评审会议应该如何组织和进行。"
+    reference_answer: ""
+    tags: ["工程管理", "团队协作"]

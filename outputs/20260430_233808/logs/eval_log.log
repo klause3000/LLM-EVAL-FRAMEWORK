@@ -1,0 +1,158 @@
+2026-04-30 23:38:08 - evalscope - INFO: Running with native backend
+2026-04-30 23:38:09 - evalscope - INFO: Dump task config to ./outputs\20260430_233808\configs\task_config.yaml
+2026-04-30 23:38:09 - evalscope - INFO: {
+    "model": "qwen2.5:7b-instruct",
+    "model_id": "qwen2.5_7b-instruct",
+    "model_args": {},
+    "model_task": "text_generation",
+    "chat_template": null,
+    "datasets": [
+        "ceval"
+    ],
+    "dataset_args": {
+        "ceval": {
+            "name": "ceval",
+            "dataset_id": "evalscope/ceval",
+            "output_types": [
+                "generation"
+            ],
+            "subset_list": [
+                "computer_network",
+                "operating_system",
+                "computer_architecture",
+                "college_programming",
+                "college_physics",
+                "college_chemistry",
+                "advanced_mathematics",
+                "probability_and_statistics",
+                "discrete_mathematics",
+                "electrical_engineer",
+                "metrology_engineer",
+                "high_school_mathematics",
+                "high_school_physics",
+                "high_school_chemistry",
+                "high_school_biology",
+                "middle_school_mathematics",
+                "middle_school_biology",
+                "middle_school_physics",
+                "middle_school_chemistry",
+                "veterinary_medicine",
+                "college_economics",
+                "business_administration",
+                "marxism",
+                "mao_zedong_thought",
+                "education_science",
+                "teacher_qualification",
+                "high_school_politics",
+                "high_school_geography",
+                "middle_school_politics",
+                "middle_school_geography",
+                "modern_chinese_history",
+                "ideological_and_moral_cultivation",
+                "logic",
+                "law",
+                "chinese_language_and_literature",
+                "art_studies",
+                "professional_tour_guide",
+                "legal_professional",
+                "high_school_chinese",
+                "high_school_history",
+                "middle_school_history",
+                "civil_servant",
+                "sports_science",
+                "plant_protection",
+                "basic_medicine",
+                "clinical_medicine",
+                "urban_and_rural_planner",
+                "accountant",
+                "fire_engineer",
+                "environmental_impact_assessment_engineer",
+                "tax_accountant",
+                "physician"
+            ],
+            "default_subset": "default",
+            "few_shot_num": 5,
+            "few_shot_random": false,
+            "train_split": "dev",
+            "eval_split": "val",
+            "prompt_template": "以下是中国关于{subject}的单项选择题，请选出其中的正确答案。你的回答的最后一行应该是这样的格式：\"答案：[LETTER]\"（不带引号），其中 [LETTER] 是 A、B、C、D 中的一个。\n\n问题：{question}\n选项：\n{choices}\n",
+            "few_shot_prompt_template": "以下是一些示例问题：\n\n{fewshot}\n\n",
+            "system_prompt": null,
+            "query_template": null,
+            "pretty_name": "C-Eval",
+            "description": "\n## Overview\n\nC-Eval is a comprehensive Chinese evaluation benchmark designed to assess the knowledge and reasoning abilities of language models in Chinese. It covers 52 subjects ranging from STEM to humanities and social sciences, with questions from middle school to professional examination levels.\n\n## Task Description\n\n- **Task Type**: Multiple-Choice Question Answering (Chinese)\n- **Input**: Chinese question with four answer choices (A, B, C, D)\n- **Output**: Single correct answer letter\n- **Subjects**: 52 subjects organized into 4 categories (STEM, Social Science, Humanities, Other)\n\n## Key Features\n\n- 13,948 multiple-choice questions across 52 subjects\n- Questions sourced from Chinese middle school, high school, college, and professional exams\n- Covers diverse domains including mathematics, physics, law, medicine, and more\n- Includes explanations for validation split questions\n- Standard benchmark for Chinese language model evaluation\n\n## Evaluation Notes\n\n- Default configuration uses **5-shot** examples from the dev split\n- Questions and prompts are in Chinese\n- Answers should follow the format: \"答案：[LETTER]\"\n- Results can be aggregated by subject or category\n- Use `subset_list` parameter to evaluate specific subjects\n",
+            "paper_url": null,
+            "data_statistics": null,
+            "sample_example": null,
+            "tags": [
+                "Knowledge",
+                "MCQ",
+                "Chinese"
+            ],
+            "filters": null,
+            "metric_list": [
+                "acc"
+            ],
+            "aggregation": "mean",
+            "shuffle": false,
+            "shuffle_choices": false,
+            "force_redownload": false,
+            "review_timeout": null,
+            "extra_params": {},
+            "sandbox_config": {}
+        }
+    },
+    "dataset_dir": "C:\\Users\\Administrator\\.cache\\modelscope\\hub\\datasets",
+    "dataset_hub": "modelscope",
+    "repeats": 1,
+    "generation_config": {
+        "batch_size": 1,
+        "temperature": 0.0
+    },
+    "eval_type": "openai_api",
+    "eval_backend": "Native",
+    "eval_config": null,
+    "limit": 20,
+    "eval_batch_size": 1,
+    "use_cache": false,
+    "rerun_review": false,
+    "work_dir": "./outputs\\20260430_233808",
+    "no_timestamp": false,
+    "enable_progress_tracker": false,
+    "ignore_errors": false,
+    "debug": false,
+    "seed": 42,
+    "api_url": "http://localhost:11434/v1",
+    "timeout": null,
+    "stream": null,
+    "judge_strategy": "auto",
+    "judge_worker_num": null,
+    "judge_model_args": {},
+    "analysis_report": false,
+    "use_sandbox": false,
+    "sandbox_type": "docker",
+    "sandbox_manager_config": {},
+    "evalscope_version": "1.6.0"
+}
+2026-04-30 23:38:09 - evalscope - INFO: Start loading benchmark dataset: ceval
+2026-04-30 23:38:12 - evalscope - INFO: Loading dataset evalscope/ceval from modelscope > subset: computer_network > split: dev ...
+2026-04-30 23:38:36 - evalscope - INFO: Loading dataset evalscope/ceval from modelscope > subset: operating_system > split: dev ...
+2026-04-30 23:39:00 - evalscope - INFO: Loading dataset evalscope/ceval from modelscope > subset: computer_architecture > split: dev ...
+2026-04-30 23:39:17 - evalscope - INFO: Loading dataset evalscope/ceval from modelscope > subset: college_programming > split: dev ...
+2026-04-30 23:39:47 - evalscope - INFO: Loading dataset evalscope/ceval from modelscope > subset: college_physics > split: dev ...
+2026-04-30 23:40:17 - evalscope - INFO: Loading dataset evalscope/ceval from modelscope > subset: college_chemistry > split: dev ...
+2026-04-30 23:41:02 - evalscope - INFO: Loading dataset evalscope/ceval from modelscope > subset: advanced_mathematics > split: dev ...
+2026-04-30 23:41:22 - evalscope - INFO: Loading dataset evalscope/ceval from modelscope > subset: probability_and_statistics > split: dev ...
+2026-04-30 23:41:39 - evalscope - INFO: Loading dataset evalscope/ceval from modelscope > subset: discrete_mathematics > split: dev ...
+2026-04-30 23:42:07 - evalscope - INFO: Loading dataset evalscope/ceval from modelscope > subset: electrical_engineer > split: dev ...
+2026-04-30 23:43:06 - evalscope - INFO: Loading dataset evalscope/ceval from modelscope > subset: metrology_engineer > split: dev ...
+2026-04-30 23:44:12 - evalscope - INFO: Loading dataset evalscope/ceval from modelscope > subset: high_school_mathematics > split: dev ...
+2026-04-30 23:44:39 - evalscope - INFO: Loading dataset evalscope/ceval from modelscope > subset: high_school_physics > split: dev ...
+2026-04-30 23:45:06 - evalscope - INFO: Loading dataset evalscope/ceval from modelscope > subset: high_school_chemistry > split: dev ...
+2026-04-30 23:45:28 - evalscope - INFO: Loading dataset evalscope/ceval from modelscope > subset: high_school_biology > split: dev ...
+2026-04-30 23:45:47 - evalscope - INFO: Loading dataset evalscope/ceval from modelscope > subset: middle_school_mathematics > split: dev ...
+2026-04-30 23:46:06 - evalscope - INFO: Loading dataset evalscope/ceval from modelscope > subset: middle_school_biology > split: dev ...
+2026-04-30 23:46:34 - evalscope - INFO: Loading dataset evalscope/ceval from modelscope > subset: middle_school_physics > split: dev ...
+2026-04-30 23:47:07 - evalscope - INFO: Loading dataset evalscope/ceval from modelscope > subset: middle_school_chemistry > split: dev ...
+2026-04-30 23:50:10 - evalscope - INFO: Running[eval]   0%| 0/1 [Elapsed: 12:01 < Remaining: ?, ?benchmark/s]
+2026-04-30 23:50:10 - evalscope - INFO: Args: Task config is provided with TaskConfig type.

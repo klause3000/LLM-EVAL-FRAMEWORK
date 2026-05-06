@@ -1,0 +1,193 @@
+analysis_report: false
+api_url: http://localhost:11434/v1
+chat_template: null
+dataset_args:
+  ceval:
+    aggregation: mean
+    data_statistics: null
+    dataset_id: evalscope/ceval
+    default_subset: default
+    description: '
+
+      ## Overview
+
+
+      C-Eval is a comprehensive Chinese evaluation benchmark designed to assess the
+      knowledge and reasoning abilities of language models in Chinese. It covers 52
+      subjects ranging from STEM to humanities and social sciences, with questions
+      from middle school to professional examination levels.
+
+
+      ## Task Description
+
+
+      - **Task Type**: Multiple-Choice Question Answering (Chinese)
+
+      - **Input**: Chinese question with four answer choices (A, B, C, D)
+
+      - **Output**: Single correct answer letter
+
+      - **Subjects**: 52 subjects organized into 4 categories (STEM, Social Science,
+      Humanities, Other)
+
+
+      ## Key Features
+
+
+      - 13,948 multiple-choice questions across 52 subjects
+
+      - Questions sourced from Chinese middle school, high school, college, and professional
+      exams
+
+      - Covers diverse domains including mathematics, physics, law, medicine, and
+      more
+
+      - Includes explanations for validation split questions
+
+      - Standard benchmark for Chinese language model evaluation
+
+
+      ## Evaluation Notes
+
+
+      - Default configuration uses **5-shot** examples from the dev split
+
+      - Questions and prompts are in Chinese
+
+      - Answers should follow the format: "答案：[LETTER]"
+
+      - Results can be aggregated by subject or category
+
+      - Use `subset_list` parameter to evaluate specific subjects
+
+      '
+    eval_split: val
+    extra_params: {}
+    few_shot_num: 5
+    few_shot_prompt_template: '以下是一些示例问题：
+
+
+      {fewshot}
+
+
+      '
+    few_shot_random: false
+    filters: null
+    force_redownload: false
+    metric_list:
+    - acc
+    name: ceval
+    output_types:
+    - generation
+    paper_url: null
+    pretty_name: C-Eval
+    prompt_template: '以下是中国关于{subject}的单项选择题，请选出其中的正确答案。你的回答的最后一行应该是这样的格式："答案：[LETTER]"（不带引号），其中
+      [LETTER] 是 A、B、C、D 中的一个。
+
+
+      问题：{question}
+
+      选项：
+
+      {choices}
+
+      '
+    query_template: null
+    review_timeout: null
+    sample_example: null
+    sandbox_config: {}
+    shuffle: false
+    shuffle_choices: false
+    subset_list:
+    - computer_network
+    - operating_system
+    - computer_architecture
+    - college_programming
+    - college_physics
+    - college_chemistry
+    - advanced_mathematics
+    - probability_and_statistics
+    - discrete_mathematics
+    - electrical_engineer
+    - metrology_engineer
+    - high_school_mathematics
+    - high_school_physics
+    - high_school_chemistry
+    - high_school_biology
+    - middle_school_mathematics
+    - middle_school_biology
+    - middle_school_physics
+    - middle_school_chemistry
+    - veterinary_medicine
+    - college_economics
+    - business_administration
+    - marxism
+    - mao_zedong_thought
+    - education_science
+    - teacher_qualification
+    - high_school_politics
+    - high_school_geography
+    - middle_school_politics
+    - middle_school_geography
+    - modern_chinese_history
+    - ideological_and_moral_cultivation
+    - logic
+    - law
+    - chinese_language_and_literature
+    - art_studies
+    - professional_tour_guide
+    - legal_professional
+    - high_school_chinese
+    - high_school_history
+    - middle_school_history
+    - civil_servant
+    - sports_science
+    - plant_protection
+    - basic_medicine
+    - clinical_medicine
+    - urban_and_rural_planner
+    - accountant
+    - fire_engineer
+    - environmental_impact_assessment_engineer
+    - tax_accountant
+    - physician
+    system_prompt: null
+    tags:
+    - Knowledge
+    - MCQ
+    - Chinese
+    train_split: dev
+dataset_dir: C:\Users\Administrator\.cache\modelscope\hub\datasets
+dataset_hub: modelscope
+datasets:
+- ceval
+debug: false
+enable_progress_tracker: false
+eval_backend: Native
+eval_batch_size: 1
+eval_config: null
+eval_type: openai_api
+evalscope_version: 1.6.0
+generation_config:
+  batch_size: 1
+  temperature: 0.0
+ignore_errors: false
+judge_model_args: {}
+judge_strategy: auto
+judge_worker_num: null
+limit: 20
+model: qwen2.5:7b-instruct
+model_args: {}
+model_id: qwen2.5_7b-instruct
+model_task: text_generation
+no_timestamp: false
+repeats: 1
+rerun_review: false
+sandbox_manager_config: {}
+sandbox_type: docker
+seed: 42
+stream: null
+timeout: null
+use_cache: false
+use_sandbox: false
+work_dir: ./outputs\20260430_233808

@@ -1,0 +1,13 @@
+pytest>=8.0
+pytest-html>=4.0
+pytest-asyncio>=0.23
+evalscope[ifeval]>=0.6
+anthropic>=0.40
+openai>=1.0
+sqlalchemy>=2.0
+jinja2>=3.0
+plotly>=5.0
+sacrebleu>=2.0
+rouge-score>=0.1
+jieba>=0.42
+pyyaml>=6.0

@@ -1,0 +1,76 @@
+dataset_name: python_exception
+description: 自动生成：Python异常处理（10条，难度：简单到中等）
+cases:
+- id: Pyth_001
+  question: Python中用于捕获异常的关键字是什么？
+  reference_answer: Python中用于捕获异常的关键字是try和except。try块用于包裹可能引发异常的代码，except块用于捕获并处理特定类型的异常。
+  tags:
+  - 知识理解
+  - 概念解释
+- id: Pyth_002
+  question: 在Python中，如何捕获所有类型的异常？
+  reference_answer: 在Python中，可以使用except Exception来捕获所有类型的异常，因为Exception是所有内置异常类的基类。
+  tags:
+  - 知识理解
+  - 代码
+- id: Pyth_003
+  question: "以下代码的输出是什么？\ntry:\n    print(10 / 0)\nexcept ZeroDivisionError:\n   \
+    \ print('除数不能为零')"
+  reference_answer: 输出为：'除数不能为零'。因为代码中尝试进行除以零的操作，会引发ZeroDivisionError异常，该异常被except块捕获并处理，打印出'除数不能为零'。
+  tags:
+  - 代码
+  - 逻辑推理
+- id: Pyth_004
+  question: Python中，finally块的作用是什么？
+  reference_answer: finally块用于定义无论是否发生异常都必须执行的代码。无论try块中是否引发异常，也无论except块是否捕获到异常，finally块中的代码都会被执行。
+  tags:
+  - 知识理解
+  - 概念解释
+- id: Pyth_005
+  question: 如何在Python中自定义异常类？
+  reference_answer: '在Python中，自定义异常类需要继承Exception类或其子类。例如：class MyError(Exception):
+    pass。然后可以通过raise MyError()来引发自定义异常。'
+  tags:
+  - 代码
+  - 知识理解
+- id: Pyth_006
+  question: Python中，raise语句的作用是什么？
+  reference_answer: raise语句用于手动引发一个异常。可以引发内置异常类，也可以引发自定义异常类。例如：raise ValueError('值错误')。
+  tags:
+  - 知识理解
+  - 代码
+- id: Pyth_007
+  question: "以下代码的输出是什么？\ntry:\n    raise ValueError('值错误')\nexcept ValueError as\
+    \ e:\n    print(e)"
+  reference_answer: 输出为：'值错误'。因为代码中通过raise语句手动引发了ValueError异常，并在except块中捕获该异常，将异常对象赋值给变量e，然后打印出e的值。
+  tags:
+  - 代码
+  - 逻辑推理
+- id: Pyth_008
+  question: Python中，如何同时捕获多个异常？
+  reference_answer: 在Python中，可以在一个except块中同时捕获多个异常，方法是将异常类型放在一个元组中。例如：except (ValueError,
+    TypeError) as e:。
+  tags:
+  - 知识理解
+  - 代码
+- id: Pyth_009
+  question: Python中，else块在异常处理中的作用是什么？
+  reference_answer: else块用于定义在try块中没有引发任何异常时执行的代码。只有当try块中的代码没有引发异常时，else块中的代码才会被执行。
+  tags:
+  - 知识理解
+  - 概念解释
+- id: Pyth_010
+  question: "以下代码的输出是什么？\ntry:\n    print(1 / 1)\nexcept ZeroDivisionError:\n    print('除数不能为零')\n\
+    else:\n    print('没有异常发生')\nfinally:\n    print('执行finally块')"
+  reference_answer: '输出为：
+
+    1
+
+    没有异常发生
+
+    执行finally块
+
+    因为try块中的代码没有引发异常，所以except块被跳过，执行else块中的代码，最后无论是否发生异常，finally块中的代码都会被执行。'
+  tags:
+  - 代码
+  - 流程步骤

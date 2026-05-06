@@ -1,0 +1,122 @@
+analysis_report: false
+api_url: http://localhost:11434/v1
+chat_template: null
+dataset_args:
+  pubmedqa:
+    aggregation: f1
+    data_statistics: null
+    dataset_id: extraordinarylab/pubmed-qa
+    default_subset: default
+    description: '## Overview
+
+
+      PubMedQA is a biomedical question answering dataset designed to evaluate models''
+      ability to reason over biomedical research texts. It contains questions derived
+      from PubMed abstracts with yes/no/maybe answers.
+
+
+      ## Task Description
+
+
+      - **Task Type**: Biomedical Question Answering (Yes/No/Maybe)
+
+      - **Input**: PubMed abstract with a research question
+
+      - **Output**: Answer (YES, NO, or MAYBE)
+
+      - **Domain**: Biomedical research, scientific literature
+
+
+      ## Key Features
+
+
+      - Questions from real PubMed research abstracts
+
+      - Three-way classification (YES/NO/MAYBE)
+
+      - Tests scientific reasoning and comprehension
+
+      - Expert-annotated with reasoning explanations
+
+      - Useful for biomedical AI evaluation
+
+
+      ## Evaluation Notes
+
+
+      - Default configuration uses **0-shot** evaluation
+
+      - Metrics: Accuracy, Precision, Recall, F1-Score, Yes Ratio, Maybe Ratio
+
+      - Aggregation method: F1-score (macro average)
+
+      - Answers should be YES, NO, or MAYBE without explanation'
+    eval_split: test
+    extra_params: {}
+    few_shot_num: 0
+    few_shot_prompt_template: null
+    few_shot_random: false
+    filters: null
+    force_redownload: false
+    metric_list:
+    - accuracy
+    - precision
+    - recall
+    - f1_score
+    - yes_ratio
+    - maybe_ratio
+    name: pubmedqa
+    output_types:
+    - generation
+    paper_url: null
+    pretty_name: PubMedQA
+    prompt_template: '{question}
+
+      Please answer YES or NO or MAYBE without an explanation.'
+    query_template: null
+    review_timeout: null
+    sample_example: null
+    sandbox_config: {}
+    shuffle: false
+    shuffle_choices: false
+    subset_list:
+    - default
+    system_prompt: null
+    tags:
+    - Knowledge
+    - Yes/No
+    train_split: null
+dataset_dir: C:\Users\Administrator\.cache\modelscope\hub\datasets
+dataset_hub: modelscope
+datasets:
+- pubmedqa
+debug: false
+enable_progress_tracker: false
+eval_backend: Native
+eval_batch_size: 1
+eval_config: null
+eval_type: openai_api
+evalscope_version: 1.6.0
+generation_config:
+  batch_size: 1
+  temperature: 0.0
+ignore_errors: false
+judge_model_args: {}
+judge_strategy: auto
+judge_worker_num: null
+limit: 100
+model: qwen2.5:7b-instruct
+model_args: {}
+model_id: qwen2.5_7b-instruct
+model_task: text_generation
+no_timestamp: false
+repeats: 1
+rerun_review: false
+sandbox_manager_config: {}
+sandbox_type: docker
+seed: 42
+stream: null
+timeout: null
+use_cache: false
+use_sandbox: false
+work_dir: ./outputs\20260429_222356

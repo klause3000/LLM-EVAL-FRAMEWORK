@@ -1,0 +1,150 @@
+datasets:
+  # ── 中文综合 ──────────────────────────────────────────────
+  - name: ceval
+    shots: 5
+    description: "中文综合能力（52个学科）"
+
+  - name: cmmlu
+    shots: 5
+    description: "中文大规模多任务语言理解（67个学科）"
+
+  - name: chinese_simpleqa
+    shots: 0
+    description: "中文事实性问答"
+
+  # ── 英文综合 ──────────────────────────────────────────────
+  - name: mmlu
+    shots: 5
+    description: "英文综合能力（57个学科）"
+
+  - name: mmlu_pro
+    shots: 5
+    description: "MMLU 专业增强版，难度更高"
+
+  - name: mmlu_redux
+    shots: 5
+    description: "MMLU 修正版，去除原始集中的标注噪声"
+
+  # ── 数学 & 推理 ───────────────────────────────────────────
+  - name: gsm8k
+    shots: 8
+    description: "小学数学应用题（链式推理）"
+
+  - name: math_500
+    shots: 4
+    description: "MATH 数据集精选 500 题"
+
+  - name: competition_math
+    shots: 4
+    description: "AMC/AIME 竞赛数学"
+
+  - name: bbh
+    shots: 3
+    description: "Big-Bench Hard：27 项复杂推理任务"
+
+  - name: drop
+    shots: 3
+    description: "离散推理 + 阅读理解（数字运算）"
+
+  - name: logi_qa
+    shots: 0
+    description: "逻辑推理选择题（中文）"
+
+  # ── 代码 ─────────────────────────────────────────────────
+  # 注意：以下代码类 benchmark 需要沙箱执行环境，Windows 上不可用（signal.setitimer / use_sandbox）
+  # 仅在 Linux 环境中启用
+  # - name: humaneval
+  #   shots: 0
+  #   description: "代码生成（164 个 Python 函数）"
+  # - name: humaneval_plus
+  #   shots: 0
+  #   description: "HumanEval 增强版，更多测试用例"
+  # - name: mbpp
+  #   shots: 3
+  #   description: "Python 编程题（500 题）"
+  # - name: mbpp_plus
+  #   shots: 3
+  #   description: "MBPP 增强版"
+
+  # ── 事实性 & 幻觉 ─────────────────────────────────────────
+  - name: truthful_qa
+    shots: 0
+    description: "事实性问答，测幻觉率"
+
+  - name: simple_qa
+    shots: 0
+    description: "简单事实性问答（OpenAI 发布）"
+
+  - name: halueval
+    shots: 0
+    description: "幻觉评测（摘要/对话/QA 三类）"
+
+  - name: trivia_qa
+    shots: 5
+    description: "百科知识问答"
+
+  # ── 知识 & 科学 ───────────────────────────────────────────
+  - name: gpqa_diamond
+    shots: 0
+    description: "博士级科学问答（生物/化学/物理）"
+
+  - name: science_qa
+    shots: 0
+    description: "中小学科学多模态问答（文本部分）"
+
+  - name: med_mcqa
+    shots: 0
+    description: "医学多选题"
+
+  - name: pubmedqa
+    shots: 0
+    description: "生物医学文献 QA"
+
+  # ── 常识 & 语言理解 ───────────────────────────────────────
+  - name: arc
+    shots: 25
+    description: "小学科学题（Easy + Challenge）"
+
+  - name: hellaswag
+    shots: 10
+    description: "情境常识推理（句子续写）"
+
+  - name: winogrande
+    shots: 5
+    description: "代词消解常识推理"
+
+  - name: piqa
+    shots: 0
+    description: "物理直觉常识推理"
+
+  - name: commonsense_qa
+    shots: 7
+    description: "日常常识多选题"
+
+  - name: race
+    shots: 0
+    description: "中学英语阅读理解"
+
+  # ── 指令遵循 ──────────────────────────────────────────────
+  - name: ifeval
+    shots: 0
+    description: "可验证的指令遵循评测"
+
+  # ── 长文本 ────────────────────────────────────────────────
+  - name: needle_haystack
+    shots: 0
+    description: "大海捞针：长文本关键信息检索"
+
+  - name: frames
+    shots: 0
+    description: "多跳长文档推理"
+
+# 仅运行部分数据集（调试用），留空则运行全部
+# enabled_datasets: [ceval, gsm8k]
+enabled_datasets: [ifeval, gsm8k]
+# enabled_datasets: [ceval, gsm8k]
+
+# evalscope 通用参数
+evalscope_params:
+  limit: 10        # 每个数据集最多评测条数，null 表示全量
+  debug: false       # 是否开启 evalscope debug 日志

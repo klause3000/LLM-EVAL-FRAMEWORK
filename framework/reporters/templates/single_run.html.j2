@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>评测报告 · {{ data.run.model_name }} · Run#{{ data.run.run_id }}</title>
+{{ plotly_js | safe }}
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --text: #1a202c;
+    --muted: #718096;
+    --accent: #4f8ef7;
+    --green: #38a169;
+    --red: #e53e3e;
+    --yellow: #d69e2e;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; }
+  a { color: var(--accent); }
+
+  .page-header { background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%); color: #fff; padding: 28px 40px; }
+  .page-header h1 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  .page-header .meta { opacity: 0.75; font-size: 13px; }
+  .page-header .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-left: 10px; background: rgba(255,255,255,0.2); }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 30px 24px; }
+
+  .section { margin-bottom: 32px; }
+  .section-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--accent); display: flex; align-items: center; gap: 8px; }
+  .section-title .icon { font-size: 18px; }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+
+  .kpi-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; text-align: center; }
+  .kpi-card .kpi-value { font-size: 32px; font-weight: 700; line-height: 1.2; }
+  .kpi-card .kpi-label { font-size: 12px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .kpi-card.good .kpi-value { color: var(--green); }
+  .kpi-card.bad .kpi-value { color: var(--red); }
+  .kpi-card.neutral .kpi-value { color: var(--accent); }
+
+  .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 768px) { .chart-row { grid-template-columns: 1fr; } }
+  .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { background: #f7fafc; text-align: left; padding: 10px 12px; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--border); }
+  tbody td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #f7fafc; }
+
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  .badge-red { background: #fff5f5; color: var(--red); border: 1px solid #fed7d7; }
+  .badge-green { background: #f0fff4; color: var(--green); border: 1px solid #c6f6d5; }
+  .badge-blue { background: #ebf8ff; color: #2b6cb0; border: 1px solid #bee3f8; }
+  .badge-gray { background: #edf2f7; color: #4a5568; border: 1px solid #e2e8f0; }
+
+  .score-val { font-weight: 700; }
+  .score-ok { color: var(--green); }
+  .score-warn { color: var(--yellow); }
+  .score-bad { color: var(--red); }
+
+  details { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
+  summary { padding: 12px 16px; cursor: pointer; background: #f7fafc; user-select: none; display: flex; align-items: center; justify-content: space-between; }
+  summary:hover { background: #edf2f7; }
+  summary .summary-left { display: flex; align-items: center; gap: 10px; }
+  .details-body { padding: 16px; background: var(--card); }
+  .details-body .field-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 12px; margin-bottom: 4px; }
+  .details-body .field-label:first-child { margin-top: 0; }
+  .details-body .field-value { white-space: pre-wrap; word-break: break-word; line-height: 1.7; color: var(--text); }
+  .dim-scores { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .dim-chip { padding: 3px 10px; border-radius: 20px; font-size: 12px; background: #ebf8ff; color: #2b6cb0; }
+
+  .ai-advice { background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 1px solid #bae6fd; border-radius: var(--radius); padding: 20px 24px; white-space: pre-wrap; line-height: 1.9; font-size: 14px; }
+  .ai-advice-empty { color: var(--muted); font-style: italic; }
+
+  .no-data { color: var(--muted); font-style: italic; text-align: center; padding: 20px; }
+  .error-text { color: var(--red); font-size: 12px; }
+
+  .toc { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+  .toc a { padding: 6px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 20px; text-decoration: none; color: var(--text); font-size: 13px; transition: all 0.15s; }
+  .toc a:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>📊 评测报告
+    <span class="badge">{{ data.run.run_type }}</span>
+  </h1>
+  <div class="meta">
+    模型: <strong>{{ data.run.model_name }}</strong>
+    &nbsp;|&nbsp; 版本: {{ data.run.model_version or "-" }}
+    &nbsp;|&nbsp; Run #{{ data.run.run_id }}
+    &nbsp;|&nbsp; {{ data.run.created_at }}
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 目录导航 -->
+  <nav class="toc">
+    {% if data.obj_datasets %}<a href="#objective">📐 客观评测</a>{% endif %}
+    {% if data.subj %}<a href="#subjective">🎯 主观评测</a>{% endif %}
+    {% if data.subj %}<a href="#radar">🕸 能力雷达</a>{% endif %}
+    {% if data.gen %}<a href="#generation">📝 生成质量</a>{% endif %}
+    {% if data.badcases %}<a href="#badcase">⚠️ Badcase</a>{% endif %}
+    {% if data.ai_advice %}<a href="#advice">💡 AI建议</a>{% endif %}
+  </nav>
+
+  <!-- 客观评测 -->
+  {% if data.obj_datasets %}
+  <div class="section" id="objective">
+    <div class="section-title"><span class="icon">📐</span>客观评测</div>
+
+    <!-- 得分汇总表 -->
+    <div class="card">
+      <table>
+        <thead>
+          <tr><th>数据集</th><th>得分</th><th>样本数</th><th>状态</th></tr>
+        </thead>
+        <tbody>
+          {% for ds in data.obj_datasets %}
+          <tr>
+            <td><strong>{{ ds.name }}</strong></td>
+            <td>
+              {% if ds.score is not none %}
+                {% set pct = (ds.score * 100) | round(1) %}
+                <span class="score-val {% if pct >= 70 %}score-ok{% elif pct >= 50 %}score-warn{% else %}score-bad{% endif %}">
+                  {{ pct }}%
+                </span>
+              {% else %}
+                <span class="error-text">失败</span>
+              {% endif %}
+            </td>
+            <td>{{ ds.num_samples }}</td>
+            <td>
+              {% if ds.error %}
+                <span class="badge badge-red" title="{{ ds.error }}">ERROR</span>
+              {% elif ds.score is not none %}
+                <span class="badge badge-green">OK</span>
+              {% else %}
+                <span class="badge badge-gray">-</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 柱状图 -->
+    <div class="chart-card">{{ obj_chart | safe }}</div>
+  </div>
+  {% endif %}
+
+  <!-- 主观评测概览 -->
+  {% if data.subj %}
+  <div class="section" id="subjective">
+    <div class="section-title"><span class="icon">🎯</span>主观评测</div>
+
+    <!-- KPI 卡片 -->
+    <div class="card-grid" style="margin-bottom:16px">
+      <div class="kpi-card neutral">
+        <div class="kpi-value">{{ data.subj.avg_score if data.subj.avg_score else "N/A" }}</div>
+        <div class="kpi-label">平均分 / 10</div>
+      </div>
+      <div class="kpi-card {% if data.subj.badcase_rate > 0.3 %}bad{% elif data.subj.badcase_rate > 0.1 %}neutral{% else %}good{% endif %}">
+        <div class="kpi-value">{{ (data.subj.badcase_rate * 100) | round(0) | int }}%</div>
+        <div class="kpi-label">Badcase 率</div>
+      </div>
+      <div class="kpi-card neutral">
+        <div class="kpi-value">{{ data.subj.total_cases }}</div>
+        <div class="kpi-label">总 Case 数</div>
+      </div>
+      <div class="kpi-card {% if data.subj.badcase_count > 0 %}bad{% else %}good{% endif %}">
+        <div class="kpi-value">{{ data.subj.badcase_count }}</div>
+        <div class="kpi-label">Badcase 数</div>
+      </div>
+    </div>
+
+    <!-- 分布 + 维度均分 -->
+    <div class="chart-row">
+      <div class="chart-card">{{ score_hist | safe }}</div>
+      <div class="card">
+        <strong style="display:block;margin-bottom:12px;font-size:13px;">各维度平均分</strong>
+        {% for dim, avg in data.subj.dimension_avg.items() | sort(attribute='1') %}
+        <div style="margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+            <span style="font-size:13px;">{{ dim }}</span>
+            <span class="score-val {% if avg >= 7 %}score-ok{% elif avg >= 5 %}score-warn{% else %}score-bad{% endif %}">{{ avg }}</span>
+          </div>
+          <div style="background:#e2e8f0;border-radius:4px;height:6px;">
+            <div style="background:{% if avg >= 7 %}var(--green){% elif avg >= 5 %}var(--yellow){% else %}var(--red){% endif %};width:{{ (avg/10*100)|round(0)|int }}%;height:6px;border-radius:4px;"></div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- 能力雷达图 -->
+  <div class="section" id="radar">
+    <div class="section-title"><span class="icon">🕸</span>能力维度雷达图</div>
+    <div class="chart-card">{{ radar | safe }}</div>
+    <p style="color:var(--muted);font-size:12px;margin-top:8px;padding:0 4px;">
+      雷达轴为评分维度，每条线代表一个 case 能力标签（tag），反映不同能力领域在各维度的表现。
+    </p>
+  </div>
+  {% endif %}
+
+  <!-- 生成质量指标 -->
+  {% if data.gen %}
+  <div class="section" id="generation">
+    <div class="section-title"><span class="icon">📝</span>生成质量指标（BLEU / ROUGE / 召回率）</div>
+
+    <!-- KPI 卡片 -->
+    <div class="card-grid" style="margin-bottom:16px">
+      <div class="kpi-card neutral">
+        <div class="kpi-value">{{ data.gen.avg_bleu if data.gen.avg_bleu is not none else "N/A" }}</div>
+        <div class="kpi-label">BLEU (0~100)</div>
+      </div>
+      <div class="kpi-card neutral">
+        <div class="kpi-value">{{ "%.3f"|format(data.gen.avg_rouge1) if data.gen.avg_rouge1 is not none else "N/A" }}</div>
+        <div class="kpi-label">ROUGE-1 F1</div>
+      </div>
+      <div class="kpi-card neutral">
+        <div class="kpi-value">{{ "%.3f"|format(data.gen.avg_rouge2) if data.gen.avg_rouge2 is not none else "N/A" }}</div>
+        <div class="kpi-label">ROUGE-2 F1</div>
+      </div>
+      <div class="kpi-card neutral">
+        <div class="kpi-value">{{ "%.3f"|format(data.gen.avg_rougeL) if data.gen.avg_rougeL is not none else "N/A" }}</div>
+        <div class="kpi-label">ROUGE-L F1</div>
+      </div>
+      <div class="kpi-card {% if data.gen.avg_recall and data.gen.avg_recall >= 0.6 %}good{% elif data.gen.avg_recall and data.gen.avg_recall >= 0.3 %}neutral{% else %}bad{% endif %}">
+        <div class="kpi-value">{{ "%.3f"|format(data.gen.avg_recall) if data.gen.avg_recall is not none else "N/A" }}</div>
+        <div class="kpi-label">平均召回率</div>
+      </div>
+      <div class="kpi-card neutral">
+        <div class="kpi-value">{{ data.gen.total_cases }}</div>
+        <div class="kpi-label">总 Case 数</div>
+      </div>
+    </div>
+
+    <!-- 逐条指标柱状图 -->
+    <div class="chart-card">{{ gen_chart | safe }}</div>
+
+    <!-- 逐条明细表 -->
+    <div class="card">
+      <strong style="display:block;margin-bottom:12px;font-size:13px;">逐条指标明细</strong>
+      <table>
+        <thead>
+          <tr><th>Case ID</th><th>数据集</th><th>标签</th><th>BLEU</th><th>ROUGE-1</th><th>ROUGE-L</th><th>召回率</th></tr>
+        </thead>
+        <tbody>
+          {% for m in data.gen.case_metrics %}
+          <tr>
+            <td><strong>{{ m.case_id }}</strong></td>
+            <td>{{ m.dataset_name }}</td>
+            <td>{% for t in m.tags %}<span class="badge badge-blue" style="margin-right:4px">{{ t }}</span>{% endfor %}</td>
+            <td>{{ "%.1f"|format(m.bleu) if m.bleu is not none else "-" }}</td>
+            <td>
+              {% if m.rouge1 is not none %}
+              <span class="score-val {% if m.rouge1 >= 0.6 %}score-ok{% elif m.rouge1 >= 0.3 %}score-warn{% else %}score-bad{% endif %}">
+                {{ "%.3f"|format(m.rouge1) }}
+              </span>
+              {% else %}-{% endif %}
+            </td>
+            <td>
+              {% if m.rougeL is not none %}
+              <span class="score-val {% if m.rougeL >= 0.5 %}score-ok{% elif m.rougeL >= 0.25 %}score-warn{% else %}score-bad{% endif %}">
+                {{ "%.3f"|format(m.rougeL) }}
+              </span>
+              {% else %}-{% endif %}
+            </td>
+            <td>
+              {% if m.recall is not none %}
+              <span class="score-val {% if m.recall >= 0.6 %}score-ok{% elif m.recall >= 0.3 %}score-warn{% else %}score-bad{% endif %}">
+                {{ "%.3f"|format(m.recall) }}
+              </span>
+              {% else %}-{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p style="color:var(--muted);font-size:12px;margin-top:8px;padding:0 4px;">
+      BLEU 范围 0~100；ROUGE / 召回率范围 0~1。中文按字符级计算，英文按词级计算。
+    </p>
+  </div>
+  {% endif %}
+
+  <!-- Badcase 详情 -->
+  {% if data.badcases %}
+  <div class="section" id="badcase">
+    <div class="section-title"><span class="icon">⚠️</span>Badcase 详情
+      <span class="badge badge-red" style="font-size:12px;">{{ data.badcases | length }} 条</span>
+    </div>
+
+    {% for bc in data.badcases %}
+    <details>
+      <summary>
+        <span class="summary-left">
+          <span class="badge badge-red">BAD</span>
+          <strong>{{ bc.case_id }}</strong>
+          <span style="color:var(--muted);">{{ bc.dataset_name }}</span>
+          {% for tag in bc.tags %}
+          <span class="badge badge-blue">{{ tag }}</span>
+          {% endfor %}
+        </span>
+        <span class="score-val score-bad">{{ bc.overall_score | round(2) }} / 10</span>
+      </summary>
+      <div class="details-body">
+        <div class="field-label">问题</div>
+        <div class="field-value">{{ bc.question }}</div>
+
+        {% if bc.reference_answer %}
+        <div class="field-label">参考答案</div>
+        <div class="field-value">{{ bc.reference_answer }}</div>
+        {% endif %}
+
+        <div class="field-label">模型回答</div>
+        <div class="field-value">{{ bc.model_answer if bc.model_answer else "（无回答记录）" }}</div>
+
+        <div class="field-label">评判理由</div>
+        <div class="field-value">{{ bc.judge_reasoning if bc.judge_reasoning else "（无理由记录）" }}</div>
+
+        <div class="field-label">各维度得分</div>
+        <div class="dim-scores">
+          {% for dim, score in bc.dimension_scores.items() %}
+          <span class="dim-chip">{{ dim }}: {{ score }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </details>
+    {% endfor %}
+  </div>
+  {% elif data.subj %}
+  <div class="section" id="badcase">
+    <div class="section-title"><span class="icon">✅</span>Badcase</div>
+    <div class="card" style="color:var(--green);text-align:center;padding:24px;">
+      🎉 本次评测无 badcase！
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- AI 优化建议 -->
+  <div class="section" id="advice">
+    <div class="section-title"><span class="icon">💡</span>AI 优化建议</div>
+    <div class="ai-advice">
+      {% if data.ai_advice %}
+        {{ data.ai_advice }}
+      {% else %}
+        <span class="ai-advice-empty">未生成 AI 建议（可使用 --html 时默认开启，或检查 judge 配置）</span>
+      {% endif %}
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<footer style="text-align:center;padding:24px;color:var(--muted);font-size:12px;border-top:1px solid var(--border);margin-top:40px;">
+  Generated by LLM Eval Framework &nbsp;|&nbsp; Run #{{ data.run.run_id }} &nbsp;|&nbsp; {{ data.run.created_at }}
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>版本对比报告 · {{ data.model_name }}</title>
+{{ plotly_js | safe }}
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --text: #1a202c;
+    --muted: #718096;
+    --accent: #4f8ef7;
+    --green: #38a169;
+    --red: #e53e3e;
+    --yellow: #d69e2e;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; }
+
+  .page-header { background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); color: #fff; padding: 28px 40px; }
+  .page-header h1 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  .page-header .meta { opacity: 0.75; font-size: 13px; }
+  .page-header .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-left: 8px; background: rgba(255,255,255,0.2); }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 30px 24px; }
+
+  .section { margin-bottom: 36px; }
+  .section-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--accent); display: flex; align-items: center; gap: 8px; }
+  .section-title .icon { font-size: 18px; }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
+  .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
+
+  /* 版本卡片横排 */
+  .run-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .run-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }
+  .run-card .run-label { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .run-card .run-score { font-size: 28px; font-weight: 700; color: var(--accent); }
+  .run-card .run-badcase { font-size: 13px; margin-top: 4px; }
+  .run-card .run-total { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .run-card.is-latest { border-color: var(--accent); border-width: 2px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { background: #f7fafc; text-align: left; padding: 10px 12px; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--border); }
+  tbody td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #f7fafc; }
+
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  .badge-up { background: #f0fff4; color: var(--green); border: 1px solid #c6f6d5; }
+  .badge-down { background: #fff5f5; color: var(--red); border: 1px solid #fed7d7; }
+  .badge-flat { background: #edf2f7; color: #4a5568; border: 1px solid #e2e8f0; }
+  .badge-blue { background: #ebf8ff; color: #2b6cb0; border: 1px solid #bee3f8; }
+
+  .score-val { font-weight: 700; }
+  .score-ok { color: var(--green); }
+  .score-warn { color: var(--yellow); }
+  .score-bad { color: var(--red); }
+
+  .delta-up { color: var(--green); font-weight: 600; }
+  .delta-down { color: var(--red); font-weight: 600; }
+  .delta-flat { color: var(--muted); }
+
+  details { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
+  summary { padding: 12px 16px; cursor: pointer; background: #f7fafc; user-select: none; display: flex; align-items: center; justify-content: space-between; }
+  summary:hover { background: #edf2f7; }
+  summary .summary-left { display: flex; align-items: center; gap: 10px; }
+  .details-body { padding: 16px; background: var(--card); }
+  .details-body .field-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 12px; margin-bottom: 4px; }
+  .details-body .field-label:first-child { margin-top: 0; }
+  .details-body .field-value { white-space: pre-wrap; word-break: break-word; line-height: 1.7; }
+  .dim-scores { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .dim-chip { padding: 3px 10px; border-radius: 20px; font-size: 12px; background: #ebf8ff; color: #2b6cb0; }
+
+  .ai-advice { background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 1px solid #bae6fd; border-radius: var(--radius); padding: 20px 24px; white-space: pre-wrap; line-height: 1.9; font-size: 14px; }
+  .ai-advice-empty { color: var(--muted); font-style: italic; }
+  .no-data { color: var(--muted); font-style: italic; text-align: center; padding: 20px; }
+
+  .toc { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+  .toc a { padding: 6px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 20px; text-decoration: none; color: var(--text); font-size: 13px; transition: all 0.15s; }
+  .toc a:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 768px) { .chart-row { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>📈 版本对比报告
+    <span class="badge">{{ data.runs | length }} 个版本</span>
+  </h1>
+  <div class="meta">
+    模型: <strong>{{ data.model_name }}</strong>
+    &nbsp;|&nbsp;
+    {% for r in data.runs %}
+      {{ r.run.label }}{% if not loop.last %} → {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 目录 -->
+  <nav class="toc">
+    <a href="#versions">📋 版本概览</a>
+    {% if data.runs | selectattr('obj_datasets') | list %}<a href="#objective">📐 客观对比</a>{% endif %}
+    <a href="#subjective">🎯 主观对比</a>
+    <a href="#generation">📝 生成质量</a>
+    <a href="#radar">🕸 能力雷达</a>
+    {% if data.runs[-1].badcases %}<a href="#badcase">⚠️ Badcase</a>{% endif %}
+    {% if data.ai_advice %}<a href="#advice">💡 AI建议</a>{% endif %}
+  </nav>
+
+  <!-- 版本概览 -->
+  <div class="section" id="versions">
+    <div class="section-title"><span class="icon">📋</span>版本概览</div>
+    <div class="run-cards">
+      {% for r in data.runs %}
+      <div class="run-card {% if loop.last %}is-latest{% endif %}">
+        <div class="run-label">
+          {% if loop.last %}🏷 最新版本{% else %}历史版本{% endif %}
+        </div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:8px;">{{ r.run.label }}</div>
+        {% if r.subj %}
+          <div class="run-score">{{ r.subj.avg_score if r.subj.avg_score else "N/A" }}</div>
+          <div class="run-badcase">
+            badcase:
+            <span class="{% if r.subj.badcase_rate > 0.3 %}score-bad{% elif r.subj.badcase_rate > 0.1 %}score-warn{% else %}score-ok{% endif %}">
+              {{ (r.subj.badcase_rate * 100) | round(0) | int }}%
+            </span>
+          </div>
+          <div class="run-total">共 {{ r.subj.total_cases }} 条 case</div>
+        {% else %}
+          <div style="color:var(--muted);font-style:italic;font-size:12px;">无主观评测数据</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- 客观对比 -->
+  {% set has_obj = data.runs | selectattr('obj_datasets') | list %}
+  {% if has_obj %}
+  <div class="section" id="objective">
+    <div class="section-title"><span class="icon">📐</span>客观评测对比</div>
+
+    <div class="chart-card">{{ compare_bar | safe }}</div>
+
+    <!-- delta 表格 -->
+    {% if data.obj_deltas %}
+    <div class="card">
+      <strong style="display:block;margin-bottom:12px;">最新 vs 上一版本 变化（{{ data.runs[-1].run.label }} vs {{ data.runs[-2].run.label if data.runs | length >= 2 else '-' }}）</strong>
+      <table>
+        <thead>
+          <tr>
+            <th>数据集</th>
+            <th>旧版本</th>
+            <th>新版本</th>
+            <th>变化</th>
+            <th>判断</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in data.obj_deltas %}
+          <tr>
+            <td><strong>{{ d.dataset }}</strong></td>
+            <td>{% if d.old_score is not none %}{{ (d.old_score * 100) | round(1) }}%{% else %}-{% endif %}</td>
+            <td>{% if d.new_score is not none %}{{ (d.new_score * 100) | round(1) }}%{% else %}-{% endif %}</td>
+            <td class="{% if d.trend == 'up' %}delta-up{% elif d.trend == 'down' %}delta-down{% else %}delta-flat{% endif %}">
+              {{ d.pct_str }}
+            </td>
+            <td>
+              {% if d.trend == 'up' %}
+                <span class="badge badge-up">▲ 提升</span>
+              {% elif d.trend == 'down' %}
+                <span class="badge badge-down">▼ 退化</span>
+              {% else %}
+                <span class="badge badge-flat">— 持平</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- 主观对比 -->
+  <div class="section" id="subjective">
+    <div class="section-title"><span class="icon">🎯</span>主观评测对比</div>
+
+    <div class="chart-card">{{ subj_trend | safe }}</div>
+
+    <!-- 各版本维度均分对比表 -->
+    {% set has_subj = data.runs | selectattr('subj') | list %}
+    {% if has_subj %}
+    <div class="card">
+      <strong style="display:block;margin-bottom:12px;">各维度平均分对比</strong>
+      {% set all_dims = [] %}
+      {% for r in data.runs %}
+        {% if r.subj %}
+          {% for dim in r.subj.dimension_avg.keys() %}
+            {% if dim not in all_dims %}{% set _ = all_dims.append(dim) %}{% endif %}
+          {% endfor %}
+        {% endif %}
+      {% endfor %}
+      <table>
+        <thead>
+          <tr>
+            <th>维度</th>
+            {% for r in data.runs %}
+            <th>{{ r.run.label }}</th>
+            {% endfor %}
+            <th>变化趋势</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for dim in all_dims %}
+          <tr>
+            <td><strong>{{ dim }}</strong></td>
+            {% for r in data.runs %}
+            <td>
+              {% if r.subj and r.subj.dimension_avg.get(dim) is not none %}
+                {% set s = r.subj.dimension_avg[dim] %}
+                <span class="score-val {% if s >= 7 %}score-ok{% elif s >= 5 %}score-warn{% else %}score-bad{% endif %}">{{ s }}</span>
+              {% else %}
+                <span style="color:var(--muted)">-</span>
+              {% endif %}
+            </td>
+            {% endfor %}
+            <td>
+              {% if data.runs | length >= 2 and data.runs[-1].subj and data.runs[-2].subj %}
+                {% set new_s = data.runs[-1].subj.dimension_avg.get(dim) %}
+                {% set old_s = data.runs[-2].subj.dimension_avg.get(dim) %}
+                {% if new_s is not none and old_s is not none %}
+                  {% set delta = new_s - old_s %}
+                  {% if delta > 0.1 %}
+                    <span class="badge badge-up">▲ +{{ delta | round(1) }}</span>
+                  {% elif delta < -0.1 %}
+                    <span class="badge badge-down">▼ {{ delta | round(1) }}</span>
+                  {% else %}
+                    <span class="badge badge-flat">— 持平</span>
+                  {% endif %}
+                {% endif %}
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- 生成质量对比 -->
+  {% set has_gen = data.runs | selectattr('gen') | list %}
+  {% if has_gen %}
+  <div class="section" id="generation">
+    <div class="section-title"><span class="icon">📝</span>生成质量指标对比</div>
+    <div class="chart-card">{{ gen_compare | safe }}</div>
+    <div class="card">
+      <strong style="display:block;margin-bottom:12px;">各版本平均指标</strong>
+      <table>
+        <thead>
+          <tr><th>版本</th><th>BLEU</th><th>ROUGE-1</th><th>ROUGE-2</th><th>ROUGE-L</th><th>召回率</th><th>Case数</th></tr>
+        </thead>
+        <tbody>
+          {% for r in data.runs %}
+          <tr>
+            <td><strong>{{ r.run.label }}</strong></td>
+            {% if r.gen %}
+              <td>{{ "%.1f"|format(r.gen.avg_bleu) if r.gen.avg_bleu is not none else "-" }}</td>
+              <td>{{ "%.3f"|format(r.gen.avg_rouge1) if r.gen.avg_rouge1 is not none else "-" }}</td>
+              <td>{{ "%.3f"|format(r.gen.avg_rouge2) if r.gen.avg_rouge2 is not none else "-" }}</td>
+              <td>{{ "%.3f"|format(r.gen.avg_rougeL) if r.gen.avg_rougeL is not none else "-" }}</td>
+              <td>{{ "%.3f"|format(r.gen.avg_recall) if r.gen.avg_recall is not none else "-" }}</td>
+              <td>{{ r.gen.total_cases }}</td>
+            {% else %}
+              <td colspan="6" style="color:var(--muted)">无生成质量数据</td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- 能力雷达图（最新版本） -->
+  <div class="section" id="radar">
+    <div class="section-title"><span class="icon">🕸</span>能力维度雷达图（最新版本）</div>
+    <div class="chart-card">{{ radar | safe }}</div>
+  </div>
+
+  <!-- 最新版本 Badcase -->
+  {% if data.runs[-1].badcases %}
+  <div class="section" id="badcase">
+    <div class="section-title"><span class="icon">⚠️</span>最新版本 Badcase
+      <span class="badge badge-down">{{ data.runs[-1].badcases | length }} 条</span>
+    </div>
+
+    {% for bc in data.runs[-1].badcases %}
+    <details>
+      <summary>
+        <span class="summary-left">
+          <span class="badge badge-down">BAD</span>
+          <strong>{{ bc.case_id }}</strong>
+          <span style="color:var(--muted);">{{ bc.dataset_name }}</span>
+          {% for tag in bc.tags %}
+          <span class="badge badge-blue">{{ tag }}</span>
+          {% endfor %}
+        </span>
+        <span class="score-val score-bad">{{ bc.overall_score | round(2) }} / 10</span>
+      </summary>
+      <div class="details-body">
+        <div class="field-label">问题</div>
+        <div class="field-value">{{ bc.question }}</div>
+
+        {% if bc.reference_answer %}
+        <div class="field-label">参考答案</div>
+        <div class="field-value">{{ bc.reference_answer }}</div>
+        {% endif %}
+
+        <div class="field-label">模型回答</div>
+        <div class="field-value">{{ bc.model_answer if bc.model_answer else "（无回答记录）" }}</div>
+
+        <div class="field-label">评判理由</div>
+        <div class="field-value">{{ bc.judge_reasoning if bc.judge_reasoning else "（无理由记录）" }}</div>
+
+        <div class="field-label">各维度得分</div>
+        <div class="dim-scores">
+          {% for dim, score in bc.dimension_scores.items() %}
+          <span class="dim-chip">{{ dim }}: {{ score }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </details>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- AI 优化建议 -->
+  <div class="section" id="advice">
+    <div class="section-title"><span class="icon">💡</span>AI 优化建议</div>
+    <div class="ai-advice">
+      {% if data.ai_advice %}
+        {{ data.ai_advice }}
+      {% else %}
+        <span class="ai-advice-empty">未生成 AI 建议（可使用 --html 时默认开启，或检查 judge 配置）</span>
+      {% endif %}
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<footer style="text-align:center;padding:24px;color:var(--muted);font-size:12px;border-top:1px solid var(--border);margin-top:40px;">
+  Generated by LLM Eval Framework &nbsp;|&nbsp; 模型: {{ data.model_name }} &nbsp;|&nbsp; 对比 {{ data.runs | length }} 个版本
+</footer>
+
+</body>
+</html>
